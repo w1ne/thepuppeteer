@@ -44,6 +44,9 @@ This document outlines the development phases for **TheMusketeer** (formerly The
 - [x] **ask_user Tool**: Agents can pause and request clarification. 0/10 🤺
 - [x] **Sandbox Explorer**: Built-in file browser for agent workspaces. 🤺
 - [x] **Split-Screen Interface**: Modern layout with logs and explorer side-by-side. 0/10 🤺
+- [x] **CI Sanitization**: Achieved zero-warning lint status across the swarm. 🤺
+- [x] **Persistence Layer**: State survives reboots via `kanban.json`. 🤺
+- [x] **UI Hardening**: Prevented crashes on uninitialized workspaces. 🤺
 - [ ] **Collaborative Refactor**: Multi-agent coding on same mission.
 
 ## Phase 10: Swarm Intelligence & Isolated Environments (Planned)

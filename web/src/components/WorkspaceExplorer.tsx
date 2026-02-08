@@ -14,9 +14,10 @@ export const WorkspaceExplorer: React.FC<WorkspaceExplorerProps> = ({ agentId })
         setIsLoading(true);
         try {
             const data = await fetchAgentFiles(agentId);
-            setFiles(data);
+            setFiles(Array.isArray(data) ? data : []);
         } catch (e) {
             console.error('Failed to fetch workspace files:', e);
+            setFiles([]);
         } finally {
             setIsLoading(false);
         }

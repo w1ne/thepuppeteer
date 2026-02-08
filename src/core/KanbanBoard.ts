@@ -1,5 +1,10 @@
+import fs from 'fs';
+import path from 'path';
 import { Agent, Task, TaskStatus, TaskPriority } from './types';
 import { randomUUID } from 'crypto';
+
+const DATA_DIR = path.resolve(process.cwd(), '.agent/data');
+const DATA_FILE = path.join(DATA_DIR, 'kanban.json');
 
 /**
  * The central orchestrator for the Vibe Kanban framework.
@@ -10,7 +15,36 @@ export class KanbanBoard {
   private agents: Map<string, Agent> = new Map();
 
   constructor() {
-    // Empty constructor
+    this.loadState();
+  }
+
+  private loadState() {
+    if (!fs.existsSync(DATA_FILE)) return;
+    try {
+      const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+      if (data.tasks) this.tasks = new Map(data.tasks);
+      if (data.agents) this.agents = new Map(data.agents);
+      console.log(
+        `[KanbanBoard] Loaded ${this.tasks.size} tasks and ${this.agents.size} agents from disk.`,
+      );
+    } catch (e) {
+      console.error('[KanbanBoard] Failed to load state:', e);
+    }
+  }
+
+  private saveState() {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      const data = {
+        tasks: Array.from(this.tasks.entries()),
+        agents: Array.from(this.agents.entries()),
+      };
+      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+    } catch (e) {
+      console.error('[KanbanBoard] Failed to save state:', e);
+    }
   }
 
   // --- Tasks ---
@@ -42,6 +76,7 @@ export class KanbanBoard {
       }
     }
 
+    this.saveState();
     return task;
   }
 
@@ -53,6 +88,7 @@ export class KanbanBoard {
       if (!task.dependencies.includes(dependencyId)) {
         task.dependencies.push(dependencyId);
         this.tasks.set(taskId, task);
+        this.saveState();
         return true;
       }
     }
@@ -77,6 +113,7 @@ export class KanbanBoard {
       task.status = status;
       if (message !== undefined) task.statusMessage = message;
       this.tasks.set(id, task);
+      this.saveState();
     }
     return task;
   }
@@ -86,6 +123,7 @@ export class KanbanBoard {
     if (task) {
       task.statusMessage = message;
       this.tasks.set(id, task);
+      this.saveState();
     }
   }
 
@@ -111,6 +149,7 @@ export class KanbanBoard {
       },
     };
     this.agents.set(id, agent);
+    this.saveState();
     return agent;
   }
 
@@ -127,6 +166,7 @@ export class KanbanBoard {
     if (agent) {
       agent.currentActivity = activity;
       this.agents.set(id, agent);
+      this.saveState();
     }
   }
 
@@ -139,6 +179,7 @@ export class KanbanBoard {
         agent.status = 'WORKING';
       }
       this.agents.set(id, agent);
+      this.saveState();
     }
   }
 
@@ -147,6 +188,7 @@ export class KanbanBoard {
     if (agent) {
       agent.pendingInput = undefined;
       this.agents.set(id, agent);
+      this.saveState();
     }
   }
 
@@ -175,6 +217,7 @@ export class KanbanBoard {
 
       this.tasks.set(taskId, task);
       this.agents.set(agentId, agent);
+      this.saveState();
       return true;
     }
     return false;

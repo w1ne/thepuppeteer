@@ -241,6 +241,9 @@ app.get('/api/agents/:id/files', async (req: Request, res: Response) => {
 
   try {
     const workspaceRoot = workspaceManager.getWorkspaceRoot(id);
+    if (!fs_sync.existsSync(workspaceRoot)) {
+      return res.json([]);
+    }
     const files = await fs.readdir(workspaceRoot, { recursive: true });
     res.json(files);
   } catch (_error) {
