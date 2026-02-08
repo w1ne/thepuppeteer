@@ -48,6 +48,25 @@ async function main() {
         await spawnAgent(name);
         break;
 
+      case 'auth:login':
+        const readline = require('readline').createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+
+        readline.question('Enter your Google Name: ', (gName: string) => {
+          readline.question('Enter your Google Email: ', (gEmail: string) => {
+            readline.question(
+              'Enter Gemini API Key (Optional): ',
+              async (gKey: string) => {
+                await saveAuth(gName, gEmail, gKey);
+                readline.close();
+              },
+            );
+          });
+        });
+        break;
+
       case 'agent:start':
         const startName = args[1];
         if (!startName) {
@@ -265,6 +284,21 @@ function runLocalDemo() {
   console.log('Spawning Agent "Local Agent"...');
   const a = board.spawnAgent('Local Agent');
   console.log(a);
+}
+
+async function saveAuth(name: string, email: string, key: string) {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, key }),
+  });
+
+  if (res.ok) {
+    console.log('Successfully logged in!');
+    if (key) console.log('Gemini API Key saved.');
+  } else {
+    console.error('Failed to save credentials.');
+  }
 }
 
 main();
