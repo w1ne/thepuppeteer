@@ -12,11 +12,11 @@ export function Layout({ children }: LayoutProps) {
             {/* Navbar */}
             <header className="h-16 border-b border-secondary/20 flex items-center justify-between px-6 bg-surface/50 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-accent/20 rounded-xl">
-                        <Sparkles className="text-accent" size={24} />
+                    <div className="p-2.5 bg-blue-600/20 rounded-xl text-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.2)]">
+                        <Sparkles className="animate-pulse" size={24} />
                     </div>
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-white to-secondary bg-clip-text text-transparent">
-                        Antigravity
+                    <h1 className="text-2xl font-black tracking-tighter bg-gradient-to-r from-white via-white/80 to-blue-400 bg-clip-text text-transparent">
+                        TheMusketeer
                     </h1>
                 </div>
 

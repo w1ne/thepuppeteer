@@ -5,11 +5,9 @@ import { Dashboard } from './components/Dashboard';
 
 function App() {
     return (
-        <GoogleAccountProvider>
-            <Layout>
-                <Dashboard />
-            </Layout>
-        </GoogleAccountProvider>
+        <Layout>
+            <Dashboard />
+        </Layout>
     );
 }
 

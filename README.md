@@ -102,9 +102,52 @@ npx themusketeer status
 - **Multi-Model Support**: Switch between Gemini and Anthropic models per agent.
 - **Durable Memory**: OpenClaW-inspired Markdown memory store.
 
-## Getting Started
+## 🧪 How to Test
 
-1.  **Install**: `npm install`
-2.  **Auth**: `npx themusketeer auth:login` (Select Gemini CLI for official Google auth).
-3.  **Spawn**: `npx themusketeer agent:spawn "Neo"`
-4.  **Work**: `npx themusketeer status` and `npx themusketeer agent:start "Neo"`
+To experience the full **Musketeer Swarm**, follow these steps:
+
+### 1. Start the Neural Backend
+
+```bash
+# Terminal 1
+npm install
+npm run start:server
+```
+
+### 2. Launch the Web Dashboard
+
+```bash
+# Terminal 2
+cd web
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to see the premium dashboard.
+
+### 3. Interact via CLI
+
+```bash
+# Terminal 3
+# Authenticate (Select Gemini CLI for the pro experience)
+npx themusketeer auth:login
+
+# Spawn a Musketeer
+npx themusketeer agent:spawn Athos
+
+# Deploy a Mission
+npx themusketeer task:create "Analyze the codebase for Phase 10" HIGH
+
+# Initiate Neural Loop
+npx themusketeer agent:start Athos
+
+# Watch the Swarm
+npx themusketeer status
+```
+
+## 🛠 Tech Stack
+
+- **Backend**: Node.js, Express, TypeScript
+- **Frontend**: React, Vite, Framer Motion, Tailwind CSS
+- **LLM**: Gemini Pro 1.5 (via @google/gemini-cli)
+- **Protocol**: Model Context Protocol (MCP)
