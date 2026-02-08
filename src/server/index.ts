@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import path from 'path';
 import { board } from '../core/KanbanBoard';
 import { memory } from '../core/MemoryStore';
+import { AgentLoop } from '../core/AgentLoop';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,14 +14,16 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// Map to store active loops
+const activeLoops: Map<string, AgentLoop> = new Map();
+
 // API Documentation
 const swaggerDocument = {
   openapi: '3.0.0',
   info: {
     title: 'thepuppeteer API',
-    version: '1.3.0',
-    description:
-      'API for managing agents, tasks (advanced), and memory in Vibe Kanban',
+    version: '1.4.0',
+    description: 'API for managing agents, tasks, memory, and autonomous loops',
   },
   paths: {
     '/api/health': {
@@ -47,6 +50,34 @@ const swaggerDocument = {
           },
         },
         responses: { '201': { description: 'Agent spawned' } },
+      },
+    },
+    '/api/agents/{id}/start': {
+      post: {
+        summary: 'Start agent autonomous loop',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: { '200': { description: 'Loop started' } },
+      },
+    },
+    '/api/agents/{id}/stop': {
+      post: {
+        summary: 'Stop agent autonomous loop',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: { '200': { description: 'Loop stopped' } },
       },
     },
     '/api/tasks': {
@@ -165,6 +196,44 @@ app.post('/api/agents', (req, res) => {
   }
   const agent = board.spawnAgent(name);
   res.status(201).json(agent);
+});
+
+app.post('/api/agents/:id/start', async (req, res) => {
+  const { id } = req.params;
+  const agent = board.getAgent(id);
+
+  if (!agent) {
+    return res.status(404).json({ error: 'Agent not found' });
+  }
+
+  if (activeLoops.has(id)) {
+    return res.status(400).json({ error: 'Agent loop already running' });
+  }
+
+  const loop = new AgentLoop(id);
+  activeLoops.set(id, loop);
+
+  // Start loop in background (doesn't await forever)
+  loop.start().catch((err) => {
+    console.error(`Agent loop ${id} failed:`, err);
+    activeLoops.delete(id);
+  });
+
+  res.json({ status: 'Agent loop started', agentId: id });
+});
+
+app.post('/api/agents/:id/stop', async (req, res) => {
+  const { id } = req.params;
+  const loop = activeLoops.get(id);
+
+  if (!loop) {
+    return res.status(400).json({ error: 'Agent loop not running' });
+  }
+
+  await loop.stop();
+  activeLoops.delete(id);
+
+  res.json({ status: 'Agent loop stopped', agentId: id });
 });
 
 // --- Tasks ---

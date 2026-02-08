@@ -48,6 +48,24 @@ async function main() {
         await spawnAgent(name);
         break;
 
+      case 'agent:start':
+        const startName = args[1];
+        if (!startName) {
+          console.error('Error: Agent name is required.');
+          process.exit(1);
+        }
+        await controlAgentLoop(startName, 'start');
+        break;
+
+      case 'agent:stop':
+        const stopName = args[1];
+        if (!stopName) {
+          console.error('Error: Agent name is required.');
+          process.exit(1);
+        }
+        await controlAgentLoop(stopName, 'stop');
+        break;
+
       // Memory Commands
       case 'memory:log':
         const logContent = args.slice(1).join(' ');
@@ -101,6 +119,8 @@ Core Commands:
   task:create <title> [p]  Create a new task (p=HIGH|MEDIUM|LOW)
   task:depends <id> <dep>  Add a dependency (Task <id> depends on <dep>)
   agent:spawn <name>       Spawn a new agent
+  agent:start <name>       Start autonomous loop for agent
+  agent:stop <name>        Stop autonomous loop for agent
 
 Memory Commands:
   memory:log <msg>         Log an activity (Ephemeral Memory)
@@ -168,6 +188,30 @@ async function spawnAgent(name: string) {
   });
   const data = await res.json();
   console.log('Agent Spawned:', data);
+}
+
+async function controlAgentLoop(name: string, action: 'start' | 'stop') {
+  // 1. Find agent by name
+  const agentsRes = await fetch(`${API_URL}/agents`);
+  const agents = await agentsRes.json();
+  const agent = agents.find((a: any) => a.name === name);
+
+  if (!agent) {
+    console.error(`Agent "${name}" not found. Spawn it first.`);
+    process.exit(1);
+  }
+
+  // 2. Call Control Endpoint
+  const res = await fetch(`${API_URL}/agents/${agent.id}/${action}`, {
+    method: 'POST',
+  });
+
+  if (res.ok) {
+    console.log(`Agent loop ${action}ed on server.`);
+  } else {
+    const err = await res.json();
+    console.error(`Failed to ${action} agent loop:`, err);
+  }
 }
 
 async function addLog(content: string) {
