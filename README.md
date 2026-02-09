@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="docs/images/dashboard.png" width="800" alt="TheMusketeer Mission Control Dashboard">
+</p>
+
 # 🤺 TheMusketeer
 
 > **All for One, One for All.** The multi-agent orchestration framework for the next generation of AI development.
 
-**TheMusketeer** (formerly ThePuppeteer) is a lean, powerful, and highly extensible multi-agent framework built on the principles of the **Vibe Kanban** framework. It bridges the gap between high-level task management and autonomous agent execution.
+**TheMusketeer** is a lean, powerful, and highly extensible multi-agent framework built on the principles of the **Vibe Kanban** framework. It bridges the gap between high-level task management and autonomous agent execution.
 
 ## Core Philosophy
 
@@ -46,6 +50,7 @@ Enable **Turbo Mode** for trusted directories to automate terminal commands (e.g
 
 - `.agent/CODEBASE_MAP.md`: High-level map of the codebase.
 - `docs/`: Documentation.
+  - [Parallel Architect Workflow](docs/parallel_architect_workflow.md): Detailed strategy for autonomous agentic development.
 - `README.md`: This file.
 
 ## Usage
@@ -149,6 +154,15 @@ npx themusketeer agent:start Athos
 # Watch the Swarm
 npx themusketeer status
 ```
+
+## 🚧 Limitations
+
+While powerful, **TheMusketeer** is currently in active development. Please keep the following in mind:
+
+- **Model Dependencies**: Performance is highly dependent on the quality of the LLM used (optimized for Gemini Pro 1.5).
+- **Local Execution**: Backend tasks run locally; ensure your environment meets the necessary resource requirements.
+- **Experimental CLI**: Some CLI commands are subject to change as we refine the interface.
+- **Security**: Always review agent proposed changes, especially when running in "Turbo Mode".
 
 ## 🛠 Tech Stack
 
